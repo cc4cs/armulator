@@ -34,6 +34,7 @@ typedef char *VoidStar;
 
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
+
 typedef uint32_t ARMword;
 typedef int32_t ARMsword;
 typedef uint64_t ARMdword;

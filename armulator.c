@@ -1,4 +1,3 @@
-
 #include "armdefs.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,10 +39,7 @@ void     ARMul_MCR           (ARMul_State *s, ARMword w, ARMword d) { exit(1); }
 //extern ARMword ARMul_DoInstr (ARMul_State * state);
 
 unsigned int mymem[0x200000];
-
 int stop_simulator ;
-
-
 
 
 /***************************************************************************\
@@ -55,9 +51,7 @@ extern unsigned int mymem[];
 ARMword GetWord (ARMul_State * state, ARMword address, int check)
 {
     ARMword data;
-
-//printf("GetWord(0x%08X) ",address);
-
+    //printf("GetWord(0x%08X) ",address);
     //uart at 0x16000000
     if(address>=0x200000)
     {
@@ -65,11 +59,10 @@ ARMword GetWord (ARMul_State * state, ARMword address, int check)
         exit(1);
     }
     data=mymem[address>>2];
-//printf("= 0x%08X\n",data);
+    //printf("= 0x%08X\n",data);
 
     return(data);
 }
-
 
 void PutWord (ARMul_State * state, ARMword address, ARMword data, int check)
 {
@@ -136,6 +129,18 @@ void PutWord (ARMul_State * state, ARMword address, ARMword data, int check)
     printf("mem[%08x] = %08x\n", address, data);
 }
 
+void printCycles(ARMul_State * state)
+{
+    unsigned long la;
+    la=0;
+    la+=state->NumScycles;
+    la+=state->NumNcycles;
+    la+=state->NumIcycles;
+    la+=state->NumCcycles;
+    la+=state->NumFcycles;
+    printf("TotlCycles %lu\n",la);
+}
+
 int main ( void )
 {
     FILE *fp;
@@ -152,13 +157,17 @@ int main ( void )
     fclose(fp);
 
     ARMul_EmulateInit();
-
     stop_simulator=0;
 
     memset(&mystate,0,sizeof(mystate));
     ARMul_NewState(&mystate);
+
     pc = 0;
     pc = ARMul_DoProg(&mystate);
-    //printf("\n");
+    
+    unsigned long int cycles = ARMul_Time(&mystate);
+    printf("cycles: %ld\n", cycles);
+    printf("instructions: %lu\n", mystate.NumInstrs);
+
     return(0);
 }
